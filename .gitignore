@@ -4,3 +4,4 @@ node_modules
 *.vsix
 .vscodeignore
 .vscode/
+vsc-extension-quickstart.md
