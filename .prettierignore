@@ -1,0 +1,21 @@
+# Folders
+**/node_modules
+**/dist
+**/dist_electron
+**/www
+**/fonts
+**/.stencil
+
+# Files
+**/*~
+**/.env*
+**/.*ignore
+**/.DS_Store
+**/*.ico
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.svg
+**/*.browserslistrc
+# All generated stencil READMEs
+/packages/basic-ui-components/src/components/**/readme.md

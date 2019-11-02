@@ -1,0 +1,83 @@
+{
+    "name": "git-proflie",
+    "displayName": "git profile",
+    "description": "Git profile supports you to know at every time in develop which is your working profile user.",
+    "version": "0.0.1",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.39.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.showProfiles",
+                "title": "Show available git user profiles",
+                "category": "git-profile"
+            },
+            {
+                "command": "extension.createProfile",
+                "title": "Create new git user profile",
+                "category": "git-profile"
+            },
+            {
+                "command": "extension.updateProfile",
+                "title": "Update git user profile",
+                "category": "git-profile"
+            },
+            {
+                "command": "extension.showGlobalUser",
+                "title": "Show global git user profile",
+                "category": "git-profile"
+            },
+            {
+                "command": "extension.showProjectUser",
+                "title": "Show project git user profile",
+                "category": "git-profile"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.7",
+        "@types/node": "^12.11.7",
+        "@types/vscode": "^1.39.0",
+        "@typescript-eslint/eslint-plugin": "^2.6.0",
+        "@typescript-eslint/parser": "^2.6.0",
+        "eslint": "^6.6.0",
+        "eslint-config-prettier": "^6.5.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-config-typescript": "^3.0.0",
+        "eslint-plugin-html": "^6.0.0",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-json": "^2.0.1",
+        "eslint-plugin-node": "^10.0.0",
+        "eslint-plugin-prettier": "^3.1.1",
+        "eslint-plugin-promise": "^4.2.1",
+        "eslint-plugin-standard": "^4.0.1",
+        "glob": "^7.1.5",
+        "mocha": "^6.2.2",
+        "prettier": "^1.18.2",
+        "typescript": "^3.6.4",
+        "vscode-test": "^1.2.2"
+    },
+    "dependencies": {
+        "@types/nodegit": "^0.24.13",
+        "@types/underscore": "^1.9.3",
+        "eslint-plugin-mocha": "^6.2.1",
+        "ts-node": "^8.4.1"
+    }
+}

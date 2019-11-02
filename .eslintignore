@@ -1,0 +1,24 @@
+**/node_modules
+**/dist
+**/dist_electron
+**/out
+**/www/build
+**/.vscode
+**/.idea
+**/fonts
+**/.stencil
+
+# Files
+**/*~
+**/.env*
+**/.*ignore
+**/.DS_Store
+**/*.ico
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.svg
+**/*.browserslistrc
+# All generated stencil READMEs
+packages/basic-ui-components/src/components/**/readme.md
+packages/launcher/postcss.config.js
