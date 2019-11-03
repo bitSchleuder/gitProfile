@@ -1,12 +1,13 @@
 import { basename } from 'path';
-import { TextEditor, window, workspace, WorkspaceFolder } from 'vscode';
+import { TextEditor, window, workspace, WorkspaceFolder, Uri } from 'vscode';
 
 const DEBUG = false;
-interface WorkspaceInfo {
+export interface WorkspaceInfo {
   text?: string | undefined;
   path?: string | undefined;
   color?: string | undefined;
 }
+
 function getherWorkspaceInfo(folder: WorkspaceFolder | undefined): WorkspaceInfo | undefined {
   let result: WorkspaceInfo | undefined;
   if (folder) {
@@ -26,23 +27,39 @@ function resolveWorkspaceFromFile(editor: TextEditor | undefined): WorkspaceFold
   }
   return result;
 }
-export function getWorkspaceInfo(): WorkspaceInfo | undefined {
+
+function resolveSingleProjectFolder(folders: WorkspaceFolder[]): WorkspaceFolder | undefined {
+  return folders && folders.length === 1 ? folders[0] : undefined;
+}
+
+async function isAGitRepo(currentFolder: WorkspaceFolder): Promise<boolean> {
+  let hasARepo = true;
+  try {
+    await workspace.fs.stat(Uri.file(currentFolder.uri.fsPath.concat('/.git')));
+  } catch (err) {
+    hasARepo = false;
+  }
+  return currentFolder && hasARepo;
+}
+
+async function noAppropriateWorkspace(currentFolder: WorkspaceFolder): Promise<boolean> {
+  return !(currentFolder && (await isAGitRepo(currentFolder)));
+}
+export async function getWorkspaceInfo(): Promise<WorkspaceInfo | undefined> {
   const editor = window.activeTextEditor;
+
   // If no workspace is opened or just a single folder, we return without any status label
   // because our extension only works when more than one folder is opened in a workspace.
-  if (!workspace.workspaceFolders) {
+  const currentFolder: WorkspaceFolder =
+    resolveSingleProjectFolder(workspace.workspaceFolders) || resolveWorkspaceFromFile(editor);
+
+  if (await noAppropriateWorkspace(currentFolder)) {
     return undefined;
   }
-  if (DEBUG)
-    console.log(`getWorkspaceInfo: has an editor: ${!!editor} and ${workspace.workspaceFolders.length} workspaces.`);
-  let result: WorkspaceInfo | undefined;
-  const isAProject: boolean = workspace.workspaceFolders.length === 1;
-  if (isAProject) {
-    result = getherWorkspaceInfo(workspace.workspaceFolders[0]);
-  } else if (editor && workspace.workspaceFolders.length > 1) {
-    // If we have a file:// resource we resolve the WorkspaceFolder this file is from and update
-    // the status accordingly.
-    result = getherWorkspaceInfo(resolveWorkspaceFromFile(editor));
-  }
+
+  console.debug(`getWorkspaceInfo: has an editor: ${!!editor} and ${workspace.workspaceFolders.length} workspaces.`);
+
+  const result: WorkspaceInfo | undefined = getherWorkspaceInfo(currentFolder);
+
   return result;
 }

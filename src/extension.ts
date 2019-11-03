@@ -19,6 +19,14 @@ import {
 } from 'vscode';
 import { getGitInfo, UserProfile } from './gitHandler';
 import { getWorkspaceInfo } from './workspaceInfo';
+import {
+  getUserProfile,
+  showUserProfiles,
+  GitUserProfile,
+  showUserProfile,
+  createUserProfileUI,
+  setUserProfileToGit
+} from './configHandler';
 
 export const DEBUG = false;
 
@@ -26,7 +34,7 @@ let gitRiderStatusBarItem: StatusBarItem;
 
 async function updateStatusBarItem(): Promise<void> {
   if (DEBUG) console.info(`updateStatusBarItem triggered.`);
-  const info = getWorkspaceInfo();
+  const info = await getWorkspaceInfo();
 
   if (info) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -115,22 +123,25 @@ export async function activate(context: ExtensionContext): Promise<void> {
     )
   );
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const startTheRide = commands.registerCommand('extension.rideGit', () => {
-    // The code you place here will be executed every time your command is executed
-
-    // Display a message box to the user
-    window.showErrorMessage('Hello VS Code!');
+  commands.registerCommand('config.commands.showUserProfile', async () => {
+    await showUserProfile();
   });
 
-  const stopTheRide: Disposable = commands.registerCommand('extension.stopRideGit', () => {
-    window.showInformationMessage('Have a good time!');
+  commands.registerCommand('config.commands.showProfiles', async () => {
+    console.log('Command: config.commands.showProfiles');
+    await showUserProfiles();
   });
 
-  context.subscriptions.push(startTheRide);
-  context.subscriptions.push(stopTheRide);
+  commands.registerCommand('config.commands.createProfile', async () => {
+    console.log('Command: config.commands.createProfile');
+    await createUserProfileUI();
+  });
+
+  commands.registerCommand('config.commands.setGitUserProfile', async () => {
+    console.log('Command: config.commands.setGitUserProfile');
+    await setUserProfileToGit();
+    await updateStatusBarItem();
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   await updateStatusBarItem();
