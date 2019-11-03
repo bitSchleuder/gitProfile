@@ -2,10 +2,15 @@
     "name": "gitprofile",
     "displayName": "gitProfile",
     "description": "Git profile supports you to know at every time in develop which is your working profile user.",
-    "version": "0.0.1",
+    "version": "0.0.4",
     "license": "MIT",
     "publisher": "bitSchleuder",
-    "icon": "images/gitProfile.png",
+    "icon": "images/icons/icon.png",
+    "repository": { "type": "git", "url": "https://github.com/bitSchleuder/gitProfile.git" },
+    "galleryBanner": {
+        "color": "#438cfa",
+        "theme": "dark"
+    },
     "engines": {
         "vscode": "^1.39.0"
     },
@@ -96,8 +101,11 @@
         "glob": "^7.1.5",
         "mocha": "^6.2.2",
         "prettier": "^1.18.2",
+        "ts-loader": "^6.2.1",
         "ts-node": "^8.4.1",
         "typescript": "^3.6.4",
-        "vscode-test": "^1.2.2"
+        "vscode-test": "^1.2.2",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10"
     }
 }
