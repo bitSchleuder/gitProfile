@@ -1,9 +1,11 @@
 {
-    "name": "git-proflie",
-    "displayName": "git profile",
+    "name": "gitprofile",
+    "displayName": "gitProfile",
     "description": "Git profile supports you to know at every time in develop which is your working profile user.",
     "version": "0.0.1",
     "license": "MIT",
+    "publisher": "bitSchleuder",
+    "icon": "images/gitProfile.png",
     "engines": {
         "vscode": "^1.39.0"
     },
@@ -13,41 +15,63 @@
     "activationEvents": [
         "*"
     ],
-    "main": "./out/extension.js",
+    "main": "./dist/extension.js",
     "contributes": {
-        "commands": [
+        "configuration": [{
+            "title": "gitProfile",
+            "properties": {
+                "gitprofile.userProfiles": {
+                    "type": "array",
+                    "description": "Your git user profiles.",
+                    "scope": "window"
+                }
+            }
+        }],
+        "commands": [{
+                "command": "config.commands.showUserProfile",
+                "title": "Show user git profile",
+                "category": "gitProfile"
+            },
             {
-                "command": "extension.showProfiles",
+                "command": "config.commands.showProfiles",
                 "title": "Show available git user profiles",
-                "category": "git-profile"
+                "category": "gitProfile"
             },
             {
-                "command": "extension.createProfile",
+                "command": "config.commands.createProfile",
                 "title": "Create new git user profile",
-                "category": "git-profile"
+                "category": "gitProfile"
             },
             {
-                "command": "extension.updateProfile",
+                "command": "config.commands.updateProfile",
                 "title": "Update git user profile",
-                "category": "git-profile"
+                "category": "gitProfile"
+            },
+            {
+                "command": "config.commands.setGitUserProfile",
+                "title": "Set git user profile",
+                "category": "gitProfile"
             },
             {
                 "command": "extension.showGlobalUser",
                 "title": "Show global git user profile",
-                "category": "git-profile"
+                "category": "gitProfile"
             },
             {
                 "command": "extension.showProjectUser",
                 "title": "Show project git user profile",
-                "category": "git-profile"
+                "category": "gitProfile"
             }
         ]
     },
     "scripts": {
-        "vscode:prepublish": "yarn run compile",
+        "vscode:package": "vsce package --yarn",
+        "vscode:prepublish": "webpack --mode production",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "yarn run compile",
+        "pretest": "yarn run --ignore-engines compile",
         "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
@@ -64,6 +88,7 @@
         "eslint-plugin-html": "^6.0.0",
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-json": "^2.0.1",
+        "eslint-plugin-mocha": "^6.2.1",
         "eslint-plugin-node": "^10.0.0",
         "eslint-plugin-prettier": "^3.1.1",
         "eslint-plugin-promise": "^4.2.1",
@@ -71,13 +96,8 @@
         "glob": "^7.1.5",
         "mocha": "^6.2.2",
         "prettier": "^1.18.2",
+        "ts-node": "^8.4.1",
         "typescript": "^3.6.4",
         "vscode-test": "^1.2.2"
-    },
-    "dependencies": {
-        "@types/nodegit": "^0.24.13",
-        "@types/underscore": "^1.9.3",
-        "eslint-plugin-mocha": "^6.2.1",
-        "ts-node": "^8.4.1"
     }
 }
