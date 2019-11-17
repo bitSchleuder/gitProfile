@@ -1,111 +1,122 @@
 {
-    "name": "gitprofile",
-    "displayName": "gitProfile",
-    "description": "Git profile supports you to know at every time in develop which is your working profile user.",
-    "version": "0.0.4",
-    "license": "MIT",
-    "publisher": "bitSchleuder",
-    "icon": "images/icons/icon.png",
-    "repository": { "type": "git", "url": "https://github.com/bitSchleuder/gitProfile.git" },
-    "galleryBanner": {
-        "color": "#438cfa",
-        "theme": "dark"
-    },
-    "engines": {
-        "vscode": "^1.39.0"
-    },
-    "categories": [
-        "Other"
+  "name": "gitprofile",
+  "displayName": "gitProfile",
+  "description": "Git profile supports you to know at every time in develop which is your working profile user.",
+  "version": "0.0.4",
+  "license": "MIT",
+  "publisher": "bitSchleuder",
+  "icon": "images/icons/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitSchleuder/gitProfile.git"
+  },
+  "galleryBanner": {
+    "color": "#438cfa",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.39.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": [
+      {
+        "title": "gitProfile",
+        "properties": {
+          "gitprofile.userProfiles": {
+            "type": "array",
+            "description": "Your git user profiles.",
+            "scope": "window"
+          }
+        }
+      }
     ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./dist/extension.js",
-    "contributes": {
-        "configuration": [{
-            "title": "gitProfile",
-            "properties": {
-                "gitprofile.userProfiles": {
-                    "type": "array",
-                    "description": "Your git user profiles.",
-                    "scope": "window"
-                }
-            }
-        }],
-        "commands": [{
-                "command": "config.commands.showUserProfile",
-                "title": "Show user git profile",
-                "category": "gitProfile"
-            },
-            {
-                "command": "config.commands.showProfiles",
-                "title": "Show available git user profiles",
-                "category": "gitProfile"
-            },
-            {
-                "command": "config.commands.createProfile",
-                "title": "Create new git user profile",
-                "category": "gitProfile"
-            },
-            {
-                "command": "config.commands.updateProfile",
-                "title": "Update git user profile",
-                "category": "gitProfile"
-            },
-            {
-                "command": "config.commands.setGitUserProfile",
-                "title": "Set git user profile",
-                "category": "gitProfile"
-            },
-            {
-                "command": "extension.showGlobalUser",
-                "title": "Show global git user profile",
-                "category": "gitProfile"
-            },
-            {
-                "command": "extension.showProjectUser",
-                "title": "Show project git user profile",
-                "category": "gitProfile"
-            }
-        ]
-    },
-    "scripts": {
-        "vscode:package": "vsce package --yarn",
-        "vscode:prepublish": "webpack --mode production",
-        "webpack": "webpack --mode development",
-        "webpack-dev": "webpack --mode development --watch",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "pretest": "yarn run --ignore-engines compile",
-        "test": "node ./out/test/runTest.js"
-    },
-    "devDependencies": {
-        "@types/glob": "^7.1.1",
-        "@types/mocha": "^5.2.7",
-        "@types/node": "^12.11.7",
-        "@types/vscode": "^1.39.0",
-        "@typescript-eslint/eslint-plugin": "^2.6.0",
-        "@typescript-eslint/parser": "^2.6.0",
-        "eslint": "^6.6.0",
-        "eslint-config-prettier": "^6.5.0",
-        "eslint-config-standard": "^14.1.0",
-        "eslint-config-typescript": "^3.0.0",
-        "eslint-plugin-html": "^6.0.0",
-        "eslint-plugin-import": "^2.18.2",
-        "eslint-plugin-json": "^2.0.1",
-        "eslint-plugin-mocha": "^6.2.1",
-        "eslint-plugin-node": "^10.0.0",
-        "eslint-plugin-prettier": "^3.1.1",
-        "eslint-plugin-promise": "^4.2.1",
-        "eslint-plugin-standard": "^4.0.1",
-        "glob": "^7.1.5",
-        "mocha": "^6.2.2",
-        "prettier": "^1.18.2",
-        "ts-loader": "^6.2.1",
-        "ts-node": "^8.4.1",
-        "typescript": "^3.6.4",
-        "vscode-test": "^1.2.2",
-        "webpack": "^4.41.2",
-        "webpack-cli": "^3.3.10"
-    }
+    "commands": [
+      {
+        "command": "config.commands.showUserProfile",
+        "title": "Show user git profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "config.commands.showProfiles",
+        "title": "Show available git user profiles",
+        "category": "gitProfile"
+      },
+      {
+        "command": "config.commands.createProfile",
+        "title": "Create new git user profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "config.commands.updateProfile",
+        "title": "Update git user profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "config.commands.deleteProfile",
+        "title": "Delete git user profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "config.commands.setGitUserProfile",
+        "title": "Set git user profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "extension.showGlobalUser",
+        "title": "Show global git user profile",
+        "category": "gitProfile"
+      },
+      {
+        "command": "extension.showProjectUser",
+        "title": "Show project git user profile",
+        "category": "gitProfile"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:package": "vsce package --yarn",
+    "vscode:prepublish": "webpack --mode production",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run --ignore-engines compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.8",
+    "@types/vscode": "^1.40.0",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.7.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-config-typescript": "^3.0.0",
+    "eslint-plugin-html": "^6.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-json": "^2.0.1",
+    "eslint-plugin-mocha": "^6.2.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "glob": "^7.1.6",
+    "mocha": "^6.2.2",
+    "prettier": "^1.19.1",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2",
+    "vscode-test": "^1.2.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
 }
