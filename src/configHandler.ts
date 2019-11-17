@@ -303,7 +303,6 @@ export async function readGitGlobalUserProfile(): Promise<void> {
 
 export async function removeGitGlobalUserProfile(): Promise<void> {
   await removeGlobalUserInfo();
-  await window.showInformationMessage(`Global git user profile removed.`);
 }
 
 export async function readGitProjectUserProfile(): Promise<void> {
@@ -320,6 +319,5 @@ export async function removeGitProjectUserProfile(): Promise<void> {
     const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
 
     await removeProjectUserInfo(openGitProjectFolder.path);
-    await window.showInformationMessage(`Project git user profile removed.`);
   }
 }
