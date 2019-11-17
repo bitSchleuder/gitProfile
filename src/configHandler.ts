@@ -1,16 +1,28 @@
-import { GitUserProfile } from './configHandler';
-import {
-  window,
-  ConfigurationTarget,
-  workspace,
-  OutputChannel,
-  CancellationToken,
-  CancellationTokenSource
-} from 'vscode';
+import { window, ConfigurationTarget, workspace, OutputChannel } from 'vscode';
 import { execute, ConfigScope, UserInfo } from './gitHandler';
 import { getWorkspaceInfo, WorkspaceInfo } from './workspaceInfo';
 
 const DEBUG = false;
+
+const ESCAPE_UPDATE_USER_PROFILE = 'Update user profile';
+const ESCAPE_CREATE_USER_PROFILE = 'Create user profile';
+const ESCAPE_CREATE_USER_PROFILE_SELECT = 'Select profile to create';
+const ESCAPE_UPDATE_USER_PROFILE_SELECT = 'Select profile to update';
+const ESCAPE_DELETE_USER_PROFILE_SELECT = 'Select profile to delete';
+
+const PLACE_HOLDER_SELECT_PROFILE = 'Select profile:';
+const PLACE_HOLDER_PROFILE_NAME = 'Profile name:';
+const PLACE_HOLDER_GIT_USER_NAME = 'Git config user name:';
+const PLACE_HOLDER_GIT_USER_EMAIL = 'Git config user e-mail:';
+const PLACE_HOLDER_SELECT_LEVEL = 'Select the level of git user data:';
+
+const GET_USER_PROFILE_SELECT = 'Select profile to show';
+const SET_GIT__USER_PROFILE_SELECT = 'Set user profile';
+
+const GIT_PROFILE_SETTING_KEY = 'gitprofile.userProfiles';
+
+const OUTPUT_CHANNEL = 'gitProfile';
+
 export interface GitUserProfile {
   profileName: string;
   gitUserConfig: {
@@ -23,19 +35,17 @@ let outputChannel: OutputChannel;
 
 const target: number = ConfigurationTarget.Global;
 
-const GIT_PROFILE_SETTEING_KEY = 'gitprofile.userProfiles';
-
 async function breakInput(action: string): Promise<void> {
   await window.showInformationMessage(`Action ${action} canceled!`);
 }
 export async function areUserProfilesAvailalbe(): Promise<boolean> {
-  return workspace.getConfiguration().has(GIT_PROFILE_SETTEING_KEY);
+  return workspace.getConfiguration().has(GIT_PROFILE_SETTING_KEY);
 }
 
 async function getAllProfilesIfAvailable(): Promise<GitUserProfile[] | undefined> {
   let result: GitUserProfile[] | undefined;
   if (await areUserProfilesAvailalbe) {
-    result = await workspace.getConfiguration().get(GIT_PROFILE_SETTEING_KEY);
+    result = await workspace.getConfiguration().get(GIT_PROFILE_SETTING_KEY);
   }
   return result;
 }
@@ -48,69 +58,94 @@ function alreadyIn(profiles: GitUserProfile[], profileName: string): boolean {
   );
 }
 
-export async function updateUserProfile(): Promise<void> {}
+async function addProfile(profiles: GitUserProfile[], newProfile: GitUserProfile): Promise<void> {
+  profiles.push(newProfile);
+  await workspace.getConfiguration().update(GIT_PROFILE_SETTING_KEY, profiles, target);
+}
 
-export async function getUserProfile(): Promise<GitUserProfile | undefined> {
+async function removeProfile(profiles: GitUserProfile[], profile: GitUserProfile): Promise<void> {
+  profiles.splice(profiles.indexOf(profile));
+  await workspace.getConfiguration().update(GIT_PROFILE_SETTING_KEY, profiles, target);
+}
+
+async function getAvailableProfileNames(): Promise<string[]> {
   const profiles: GitUserProfile[] | undefined = await getAllProfilesIfAvailable();
-
-  let result: GitUserProfile | undefined;
-
   if (profiles && profiles.length > 0) {
-    const profileNames: string[] = profiles.map((entry: GitUserProfile): string => {
+    return profiles.map((entry: GitUserProfile): string => {
       return entry.profileName;
     });
-
-    const selectedProfile = await window.showQuickPick(profileNames, {
-      placeHolder: 'Select a profile name:'
-    });
-
-    if (!selectedProfile) {
-      breakInput('Select user profile');
-      return undefined;
-    }
-
-    result = profiles.filter((profile: GitUserProfile): boolean => {
-      return profile.profileName === selectedProfile;
-    })[0];
   }
-  return result;
+
+  return [];
 }
 
-function formatOutputChannel(userProfile: GitUserProfile): void {
-  outputChannel.appendLine(`Profile name: ${userProfile.profileName}`);
-  outputChannel.appendLine(`User name: ${userProfile.gitUserConfig.name}`);
-  outputChannel.appendLine(`User e-Mail: ${userProfile.gitUserConfig.email}`);
-  outputChannel.appendLine('');
-  outputChannel.appendLine('++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-  outputChannel.appendLine('');
-}
-export async function showUserProfile(): Promise<void> {
-  const userProfile: GitUserProfile = await getUserProfile();
-
-  if (!outputChannel) outputChannel = await window.createOutputChannel('gitProfile');
-
-  outputChannel.show();
-  console.log('Command: config.commands.showUserProfile');
-  outputChannel.appendLine('Selected git user profile:');
-  outputChannel.appendLine('');
-  formatOutputChannel(userProfile);
+function getProfileFromName(profiles: GitUserProfile[], selectedProfile: string): GitUserProfile {
+  return profiles.filter((profile: GitUserProfile): boolean => {
+    return profile.profileName === selectedProfile;
+  })[0];
 }
 
-export async function showUserProfiles(): Promise<void> {
-  // return getAllProfilesIfAvailable();
-
-  if (!outputChannel) outputChannel = await window.createOutputChannel('gitProfile');
-
-  outputChannel.show();
-
-  const profiles: GitUserProfile[] = await getAllProfilesIfAvailable();
-
-  outputChannel.appendLine('Available git user profiles:');
-  outputChannel.appendLine('');
-
-  profiles.map((profile: GitUserProfile): void => {
-    formatOutputChannel(profile);
+async function selectProfileNameFromInput(): Promise<string> {
+  const profileNames: string[] = await getAvailableProfileNames();
+  if (profileNames.length === 0) return undefined;
+  return window.showQuickPick(profileNames, {
+    placeHolder: PLACE_HOLDER_SELECT_PROFILE
   });
+}
+
+async function getProfileNameFromInput(updateProfile?: GitUserProfile): Promise<string> {
+  return window.showInputBox({
+    prompt: PLACE_HOLDER_PROFILE_NAME,
+    value: updateProfile ? updateProfile.profileName : ''
+  });
+}
+
+async function getUserNameFromInput(updateProfile?: GitUserProfile): Promise<string> {
+  return window.showInputBox({
+    prompt: PLACE_HOLDER_GIT_USER_NAME,
+    value: updateProfile ? updateProfile.gitUserConfig.name : ''
+  });
+}
+
+async function getEMailFromInput(updateProfile?: GitUserProfile): Promise<string> {
+  return window.showInputBox({
+    prompt: PLACE_HOLDER_GIT_USER_EMAIL,
+    value: updateProfile ? updateProfile.gitUserConfig.email : ''
+  });
+}
+
+async function selectGitProfileLevel(levels: string[]): Promise<string> {
+  return window.showQuickPick(levels, {
+    placeHolder: PLACE_HOLDER_SELECT_LEVEL
+  });
+}
+
+function escapeInputFlowIfNull(step: string, condition: any): void {
+  if (!condition) {
+    breakInput(step);
+    return undefined;
+  }
+}
+
+async function createLevels(): Promise<string[]> {
+  const levels: string[] = [`global`];
+
+  const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
+  if (openGitProjectFolder) {
+    levels.push('project');
+  }
+
+  return levels;
+}
+
+async function writeToGitUserProfile(level: string, selectedProfile: GitUserProfile): Promise<void> {
+  if (workspace.workspaceFolders) {
+    if (level && selectedProfile) {
+      const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
+      execute(openGitProjectFolder.path, ConfigScope[level], UserInfo.name, selectedProfile.gitUserConfig.name);
+      execute(openGitProjectFolder.path, ConfigScope[level], UserInfo.email, selectedProfile.gitUserConfig.email);
+    }
+  }
 }
 async function createUserProfile(profileName: string, userName: string, userMail: string): Promise<boolean> {
   const CREATED = true;
@@ -121,60 +156,112 @@ async function createUserProfile(profileName: string, userName: string, userMail
 
   if (alreadyIn(profiles, profileName)) return !CREATED;
 
-  const newProfile: GitUserProfile = { profileName: '', gitUserConfig: { name: '', email: '' } };
+  const newProfile: GitUserProfile = {
+    profileName: '',
+    gitUserConfig: { name: '', email: '' }
+  };
   newProfile.profileName = profileName;
   newProfile.gitUserConfig.name = userName;
   newProfile.gitUserConfig.email = userMail;
 
-  profiles.push(newProfile);
-
-  await workspace.getConfiguration().update(GIT_PROFILE_SETTEING_KEY, profiles, target);
+  await addProfile(profiles, newProfile);
 
   return CREATED;
 }
 
-export async function setUserProfileToGit(): Promise<void> {
-  const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
+async function writeToOutputChannelIntro(intro: string[]): Promise<void> {
+  if (!outputChannel) outputChannel = await window.createOutputChannel(OUTPUT_CHANNEL);
 
-  const pickers: string[] = [`global`];
-  if (openGitProjectFolder) {
-    pickers.push('project');
-  }
-  const level: string | undefined = await window.showQuickPick(pickers, {
-    placeHolder: 'Select the level of git user data.'
+  outputChannel.show();
+
+  intro.map((line: string) => {
+    outputChannel.appendLine(line);
   });
+}
 
-  if (!level) {
-    breakInput('Set user profile');
-    return undefined;
-  }
+async function writeToOutputChannel(userProfile: GitUserProfile): Promise<void> {
+  if (!outputChannel) outputChannel = await window.createOutputChannel('gitProfile');
 
-  const selectedProfile: GitUserProfile | undefined = await getUserProfile();
+  outputChannel.show();
+  outputChannel.appendLine('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  outputChannel.appendLine(`Profile name: ${userProfile.profileName}`);
+  outputChannel.appendLine(`User name: ${userProfile.gitUserConfig.name}`);
+  outputChannel.appendLine(`User e-Mail: ${userProfile.gitUserConfig.email}`);
+  outputChannel.appendLine('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  outputChannel.appendLine('');
+}
+export async function updateUserProfileUI(): Promise<void> {
+  const selectedProfile: string = await selectProfileNameFromInput();
+  escapeInputFlowIfNull(ESCAPE_UPDATE_USER_PROFILE_SELECT, selectedProfile);
+  const profiles: GitUserProfile[] | undefined = await getAllProfilesIfAvailable();
+  const toUpdate: GitUserProfile = getProfileFromName(profiles, selectedProfile);
 
-  if (workspace.workspaceFolders) {
-    if (level && selectedProfile) {
-      execute(openGitProjectFolder.path, ConfigScope[level], UserInfo.name, selectedProfile.gitUserConfig.name);
-      execute(openGitProjectFolder.path, ConfigScope[level], UserInfo.email, selectedProfile.gitUserConfig.email);
+  const profileName: string = await getProfileNameFromInput(toUpdate);
+  escapeInputFlowIfNull(ESCAPE_UPDATE_USER_PROFILE, profileName);
+  const userName: string = await getUserNameFromInput(toUpdate);
+  escapeInputFlowIfNull(ESCAPE_UPDATE_USER_PROFILE, userName);
+  const userEMail: string = await getEMailFromInput(toUpdate);
+  escapeInputFlowIfNull(ESCAPE_UPDATE_USER_PROFILE, userEMail);
+
+  await removeProfile(profiles, toUpdate);
+
+  toUpdate.profileName = profileName;
+  toUpdate.gitUserConfig.name = userName;
+  toUpdate.gitUserConfig.email = userEMail;
+
+  await addProfile(profiles, toUpdate);
+  await window.showInformationMessage(`Profile ${selectedProfile} updated!`);
+}
+
+export async function deleteUserProfileUI(): Promise<void> {
+  const profiles: GitUserProfile[] | undefined = await getAllProfilesIfAvailable();
+  const selectedProfile: string = await selectProfileNameFromInput();
+  escapeInputFlowIfNull(ESCAPE_DELETE_USER_PROFILE_SELECT, selectedProfile);
+  const toDelete: GitUserProfile = getProfileFromName(profiles, selectedProfile);
+
+  await removeProfile(profiles, toDelete);
+  await window.showInformationMessage(`Profile ${selectedProfile} deleted!`);
+}
+
+export async function getUserProfileUI(): Promise<GitUserProfile | undefined> {
+  const profiles: GitUserProfile[] | undefined = await getAllProfilesIfAvailable();
+  const selectedProfile: string = await selectProfileNameFromInput();
+  escapeInputFlowIfNull(GET_USER_PROFILE_SELECT, selectedProfile);
+  return getProfileFromName(profiles, selectedProfile);
+}
+export async function showUserProfileUI(): Promise<void> {
+  const userProfile: GitUserProfile = await getUserProfileUI();
+  await writeToOutputChannel(userProfile);
+}
+
+export async function showUserProfilesUI(): Promise<void> {
+  await writeToOutputChannelIntro(['Available git user profiles:', '']);
+
+  const profiles: GitUserProfile[] = await getAllProfilesIfAvailable();
+  profiles.map(
+    async (profile: GitUserProfile): Promise<void> => {
+      await writeToOutputChannel(profile);
     }
-  }
+  );
+}
+
+export async function setUserProfileToGitUI(): Promise<void> {
+  const levels: string[] = await createLevels();
+  const level: string | undefined = await selectGitProfileLevel(levels);
+  escapeInputFlowIfNull(SET_GIT__USER_PROFILE_SELECT, level);
+
+  const selectedProfile: GitUserProfile | undefined = await getUserProfileUI();
+
+  await writeToGitUserProfile(level, selectedProfile);
 }
 
 export async function createUserProfileUI(): Promise<void> {
-  const profileName: string = await window.showInputBox({ prompt: 'Profile name:' });
-  if (!profileName) {
-    breakInput('Create Profile');
-    return undefined;
-  }
-  const userName: string = await window.showInputBox({ prompt: 'Git config user name:' });
-  if (!userName) {
-    breakInput('Create Profile');
-    return undefined;
-  }
-  const userMail: string = await window.showInputBox({ prompt: 'Git config user e-mail:' });
-  if (!userMail) {
-    breakInput('Create Profile');
-    return undefined;
-  }
+  const profileName: string = await getProfileNameFromInput();
+  escapeInputFlowIfNull(ESCAPE_CREATE_USER_PROFILE_SELECT, profileName);
+  const userName: string = await getUserNameFromInput();
+  escapeInputFlowIfNull(ESCAPE_CREATE_USER_PROFILE, userName);
+  const userMail: string = await getEMailFromInput();
+  escapeInputFlowIfNull(ESCAPE_CREATE_USER_PROFILE, userMail);
 
   if (DEBUG) console.log(`createUserProfile: Input profileName: ${profileName}, name: ${userName}, email: ${userMail}`);
 

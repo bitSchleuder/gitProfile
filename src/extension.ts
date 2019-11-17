@@ -20,12 +20,14 @@ import {
 import { getGitInfo, UserProfile } from './gitHandler';
 import { getWorkspaceInfo } from './workspaceInfo';
 import {
-  getUserProfile,
-  showUserProfiles,
+  getUserProfileUI,
+  showUserProfilesUI,
   GitUserProfile,
-  showUserProfile,
+  showUserProfileUI,
   createUserProfileUI,
-  setUserProfileToGit
+  setUserProfileToGitUI,
+  deleteUserProfileUI,
+  updateUserProfileUI
 } from './configHandler';
 
 export const DEBUG = false;
@@ -124,12 +126,12 @@ export async function activate(context: ExtensionContext): Promise<void> {
   );
 
   commands.registerCommand('config.commands.showUserProfile', async () => {
-    await showUserProfile();
+    await showUserProfileUI();
   });
 
   commands.registerCommand('config.commands.showProfiles', async () => {
     console.log('Command: config.commands.showProfiles');
-    await showUserProfiles();
+    await showUserProfilesUI();
   });
 
   commands.registerCommand('config.commands.createProfile', async () => {
@@ -137,9 +139,19 @@ export async function activate(context: ExtensionContext): Promise<void> {
     await createUserProfileUI();
   });
 
+  commands.registerCommand('config.commands.updateProfile', async () => {
+    console.log('Command: config.commands.updateProfile');
+    await updateUserProfileUI();
+  });
+
+  commands.registerCommand('config.commands.deleteProfile', async () => {
+    console.log('Command: config.commands.deleteProfile');
+    await deleteUserProfileUI();
+  });
+
   commands.registerCommand('config.commands.setGitUserProfile', async () => {
     console.log('Command: config.commands.setGitUserProfile');
-    await setUserProfileToGit();
+    await setUserProfileToGitUI();
     await updateStatusBarItem();
   });
 
