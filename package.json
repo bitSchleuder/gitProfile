@@ -2,7 +2,7 @@
   "name": "gitprofile",
   "displayName": "gitProfile",
   "description": "Git profile supports you to know at every time in develop which is your working profile user.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "license": "MIT",
   "publisher": "bitSchleuder",
   "icon": "images/icons/icon.png",
@@ -82,7 +82,7 @@
       {
         "command": "config.commands.removeGitGlobalUserProfile",
         "title": "Remove git global user profile",
-        "category": "config.commands.setGitUserProfile"
+        "category": "gitProfile"
       },
       {
         "command": "config.commands.removeGitProjectUserProfile",
