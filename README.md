@@ -1,4 +1,4 @@
-# gitProfile README
+# gitProfile support for Visual Studio Code
 
 Git profile supports you to know at every time in develop which is your working profile user.
 
