@@ -2,7 +2,7 @@
   "name": "gitprofile",
   "displayName": "gitProfile",
   "description": "Git profile supports you to know at every time in develop which is your working profile user.",
-  "version": "0.0.4",
+  "version": "0.6.0",
   "license": "MIT",
   "publisher": "bitSchleuder",
   "icon": "images/icons/icon.png",
@@ -40,27 +40,27 @@
     "commands": [
       {
         "command": "config.commands.showUserProfile",
-        "title": "Show user git profile",
+        "title": "Show a certain profile",
         "category": "gitProfile"
       },
       {
         "command": "config.commands.showProfiles",
-        "title": "Show available git user profiles",
+        "title": "Show available profiles",
         "category": "gitProfile"
       },
       {
         "command": "config.commands.createProfile",
-        "title": "Create new git user profile",
+        "title": "Create new profile",
         "category": "gitProfile"
       },
       {
         "command": "config.commands.updateProfile",
-        "title": "Update git user profile",
+        "title": "Update profile",
         "category": "gitProfile"
       },
       {
         "command": "config.commands.deleteProfile",
-        "title": "Delete git user profile",
+        "title": "Delete profile",
         "category": "gitProfile"
       },
       {
@@ -69,13 +69,24 @@
         "category": "gitProfile"
       },
       {
-        "command": "extension.showGlobalUser",
+        "command": "config.commands.showGlobalUser",
         "title": "Show global git user profile",
         "category": "gitProfile"
       },
       {
-        "command": "extension.showProjectUser",
+        "command": "config.commands.showProjectUser",
         "title": "Show project git user profile",
+        "category": "gitProfile",
+        "when": "getWorkspaceInfo"
+      },
+      {
+        "command": "config.commands.removeGitGlobalUserProfile",
+        "title": "Remove git global user profile",
+        "category": "config.commands.setGitUserProfile"
+      },
+      {
+        "command": "config.commands.removeGitProjectUserProfile",
+        "title": "Remove git local user profile",
         "category": "gitProfile"
       }
     ]

@@ -17,17 +17,19 @@ import {
   Disposable,
   TextEditorViewColumnChangeEvent
 } from 'vscode';
-import { getGitInfo, UserProfile } from './gitHandler';
+import { getGitProjectInfo, UserProfile } from './gitHandler';
 import { getWorkspaceInfo } from './workspaceInfo';
 import {
-  getUserProfileUI,
-  showUserProfilesUI,
-  GitUserProfile,
-  showUserProfileUI,
-  createUserProfileUI,
+  showProfilesUI,
+  showProfileUI,
+  createProfileUI,
   setUserProfileToGitUI,
-  deleteUserProfileUI,
-  updateUserProfileUI
+  deleteProfileUI,
+  updateProfileUI,
+  readGitGlobalUserProfile,
+  readGitProjectUserProfile,
+  removeGitGlobalUserProfile,
+  removeGitProjectUserProfile
 } from './configHandler';
 
 export const DEBUG = false;
@@ -40,7 +42,7 @@ async function updateStatusBarItem(): Promise<void> {
 
   if (info) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const profile: UserProfile | undefined = await getGitInfo(info.path);
+    const profile: UserProfile | undefined = await getGitProjectInfo(info.path);
     if (profile) {
       if (DEBUG) console.log(`UserProfile: ${profile}`);
       const worskpaceTxt = info.text ? `${info.text}: ` : '';
@@ -126,32 +128,54 @@ export async function activate(context: ExtensionContext): Promise<void> {
   );
 
   commands.registerCommand('config.commands.showUserProfile', async () => {
-    await showUserProfileUI();
+    await showProfileUI();
   });
 
   commands.registerCommand('config.commands.showProfiles', async () => {
     console.log('Command: config.commands.showProfiles');
-    await showUserProfilesUI();
+    await showProfilesUI();
   });
 
   commands.registerCommand('config.commands.createProfile', async () => {
     console.log('Command: config.commands.createProfile');
-    await createUserProfileUI();
+    await createProfileUI();
   });
 
   commands.registerCommand('config.commands.updateProfile', async () => {
     console.log('Command: config.commands.updateProfile');
-    await updateUserProfileUI();
+    await updateProfileUI();
   });
 
   commands.registerCommand('config.commands.deleteProfile', async () => {
     console.log('Command: config.commands.deleteProfile');
-    await deleteUserProfileUI();
+    await deleteProfileUI();
   });
 
   commands.registerCommand('config.commands.setGitUserProfile', async () => {
     console.log('Command: config.commands.setGitUserProfile');
     await setUserProfileToGitUI();
+    await updateStatusBarItem();
+  });
+
+  commands.registerCommand('config.commands.showGlobalUser', async () => {
+    console.log('Command: config.commands.showGlobalUser');
+    await readGitGlobalUserProfile();
+  });
+
+  commands.registerCommand('config.commands.showProjectUser', async () => {
+    console.log('Command: config.commands.showProjectUser');
+    await readGitProjectUserProfile();
+  });
+
+  commands.registerCommand('config.commands.removeGitGlobalUserProfile', async () => {
+    console.log('Command: config.commands.removeGitGlobalUserProfile');
+    await removeGitGlobalUserProfile();
+    await updateStatusBarItem();
+  });
+
+  commands.registerCommand('config.commands.removeGitProjectUserProfile', async () => {
+    console.log('Command: config.commands.removeGitProjectUserProfile');
+    await removeGitProjectUserProfile();
     await updateStatusBarItem();
   });
 
