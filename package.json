@@ -2,7 +2,7 @@
   "name": "gitprofile",
   "displayName": "gitProfile",
   "description": "Git profile supports you to know at every time in develop which is your working profile user.",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "license": "MIT",
   "publisher": "bitSchleuder",
   "icon": "images/icons/icon.png",
