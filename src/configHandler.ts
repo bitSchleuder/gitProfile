@@ -2,13 +2,16 @@ import { window, ConfigurationTarget, workspace, OutputChannel } from 'vscode';
 import {
   execute,
   GitConfigScope,
-  GitUserInfo,
+  GitConfigValues,
   UserProfile,
   getGitProjectInfo,
   getGitGlobalInfo,
   GitCommands,
   removeGlobalUserInfo,
-  removeProjectUserInfo
+  removeProjectUserInfo,
+  readProjectOriginUrl,
+  getProjectFromOriginUrl,
+  getHostFromOriginUrl
 } from './gitHandler';
 import { getWorkspaceInfo, WorkspaceInfo } from './workspaceInfo';
 
@@ -156,14 +159,14 @@ async function writeToGitUserProfile(level: string, selectedProfile: GitUserProf
       execute(
         openGitProjectFolder.path,
         GitConfigScope[level],
-        GitUserInfo.name,
+        GitConfigValues.name,
         GitCommands.replaceAll,
         selectedProfile.gitUserConfig.name
       );
       execute(
         openGitProjectFolder.path,
         GitConfigScope[level],
-        GitUserInfo.email,
+        GitConfigValues.email,
         GitCommands.replaceAll,
         selectedProfile.gitUserConfig.email
       );
@@ -319,5 +322,23 @@ export async function removeGitProjectUserProfile(): Promise<void> {
     const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
 
     await removeProjectUserInfo(openGitProjectFolder.path);
+  }
+}
+
+export async function getGitProjectOriginUrl(): Promise<void> {
+  if (workspace.workspaceFolders) {
+    const openGitProjectFolder: WorkspaceInfo = await getWorkspaceInfo();
+
+    const url = await readProjectOriginUrl(openGitProjectFolder.path);
+
+    if (url) await window.showInformationMessage(`Project origin url: ${url}`);
+
+    const projectName = await getProjectFromOriginUrl(openGitProjectFolder.path);
+
+    if (projectName) await window.showInformationMessage(`Project origin url: ${projectName}`);
+
+    const hostName = await getHostFromOriginUrl(openGitProjectFolder.path);
+
+    if (hostName) await window.showInformationMessage(`Project origin url: ${hostName}`);
   }
 }

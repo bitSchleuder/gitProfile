@@ -12,8 +12,8 @@ function getherWorkspaceInfo(folder: WorkspaceFolder | undefined): WorkspaceInfo
   let result: WorkspaceInfo | undefined;
   if (folder) {
     result = {};
+    result.path = folder.uri.fsPath;
     result.text = `$(logo-github) ${basename(folder.uri.fsPath)}`;
-    result.path = folder.uri.path;
   }
   return result;
 }

@@ -29,7 +29,8 @@ import {
   readGitGlobalUserProfile,
   readGitProjectUserProfile,
   removeGitGlobalUserProfile,
-  removeGitProjectUserProfile
+  removeGitProjectUserProfile,
+  getGitProjectOriginUrl
 } from './configHandler';
 
 export const DEBUG = false;
@@ -177,6 +178,11 @@ export async function activate(context: ExtensionContext): Promise<void> {
     console.log('Command: config.commands.removeGitProjectUserProfile');
     await removeGitProjectUserProfile();
     await updateStatusBarItem();
+  });
+
+  commands.registerCommand('config.commands.readGitProjectOriginUrl', async () => {
+    console.log('Command: config.commands.readGitProjectOriginUrl');
+    await getGitProjectOriginUrl();
   });
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
